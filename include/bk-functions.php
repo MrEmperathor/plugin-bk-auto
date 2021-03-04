@@ -54,8 +54,13 @@ function bk_dcms_get_links_from_post_create( $data ) {
             'post_type'   => 'movies',
             'post_author'   => 1
         );
-    
+        
+        
         $post_id = wp_insert_post( $my_post );
+        $urlPost = 'http://' . $_SERVER["HTTP_HOST"] . '/wp-admin/post.php?post='.$post_id.'&action=edit';
+        $dato_json_result = json_encode(array("status" => "successful", "id" => $post_id, "url" => $urlPost));
+        return $dato_json_result;
+        // var_dump($_SERVER["HTTP_HOST"]);
 
     }elseif ($bk_type === 'update_links') {
 
