@@ -8,8 +8,8 @@
 function Bk_Add_My_Admin_Link()
 {
     add_menu_page(
-        'My First Page', // Title of the page
-        'My First Plugin', // Text to show on the menu link
+        'Bk Automatize', // Title of the page
+        'Bk Automatize', // Text to show on the menu link
         'manage_options', // Capability requirement to see the link
         plugin_dir_path(__FILE__) . '/bk-inicio.php' // The 'slug' - file to display when clicking the link
         // 'include/mfp-first-acp-page.php'
