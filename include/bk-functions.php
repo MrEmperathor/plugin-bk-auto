@@ -21,7 +21,7 @@ add_action( 'admin_menu', 'Bk_Add_My_Admin_Link' );
 //   api/(?P<api_key>[a-zA-Z0-9-]+)/blinks/(?P<biky_links>[\S]+)/blang/(?P<lang>[\S]+)/q/(?P<q>[\S]+)/
 add_action( 'rest_api_init', function () {
     // http://pelis24hd.test/wp-json/bk-dcms-seo-yoast-generate-post/v2/postID/11001/api/4cd9cd25-fc28-4089-9977-70377dc6cd4f/blinks/asdadasdasdasdasdad/blang/latinoooo
-register_rest_route( 'bk-dcms-seo-yoast-generate-post/v2', '/postID/(?P<post_id>\d+)/api/(?P<api_key>[a-zA-Z0-9-]+)/blinks/(?P<biky_links>[\S]+)/blang/(?P<lang>[\S]+)/bcalidad/(?P<q>[\S]+)/type/(?P<type>[\S]+)/', array(
+register_rest_route( 'bk-dcms-seo-yoast-generate-post/v2', '/postID/(?P<post_id>\d+)/api/(?P<api_key>[a-zA-Z0-9-]+)/blinks/(?P<biky_links>[\S]+)/blang/(?P<lang>[\S]+)/bcalidad/(?P<q>[\S]+)/type/(?P<type>[\S]+)/tr/(?P<tr>[\S]+)/', array(
     'methods' => 'GET',
     'callback' => 'bk_dcms_get_links_from_post_create',
 ) );
@@ -42,6 +42,7 @@ function bk_dcms_get_links_from_post_create( $data ) {
     $_POST['trgrabber_id'] = $data['post_id'];
     $_POST['trgrabber_link'] = json_decode(base64_decode($data['biky_links']));
     $_POST['trgrabber_lang'] = json_decode(base64_decode($data['lang']));
+    $_POST['trgrabber_type'] = json_decode(base64_decode($data['tr']));
     $_POST['trgrabber_quality'] = json_decode(base64_decode($data['q']));
     // var_dump($_POST['trgrabber_quality']);
 
@@ -193,3 +194,42 @@ function bk_dcms_get_links_from_post_create( $data ) {
         echo "PELI ACTUALIZADA!";
     }
   }
+
+
+
+add_action( 'rest_api_init', function () {
+    
+register_rest_route( 'bk-auto-generate-buscar-id/v2', '/postID/(?P<tmdb>\d+)/api/(?P<api_key>[a-zA-Z0-9-]+)/', array(
+    'methods' => 'GET',
+    'callback' => 'bk_auto_buscar_id_tmdb',
+) );
+});
+
+function bk_auto_buscar_id_tmdb( $data ) {
+
+    $api_key_app_breiky = '4cd9cd25-fc28-4089-9977-70377dc6cd4f';
+    if ($api_key_app_breiky !== $data['api_key']) return;
+
+
+    $slug_page = $data["tmdb"];
+    $table_name = 'wp_postmeta'; // nombre de la tabl
+    global $wpdb;
+    $query = $wpdb->prepare("SELECT * FROM $wpdb->postmeta WHERE meta_value = %d", $slug_page);
+    $items = $wpdb->get_results($query);
+    $result = array();
+    $result_mayor = array();
+    
+    foreach ($items as $item) {
+        if (!empty($item->post_id)) {
+            $result["id"] = $item->post_id;
+            $result["link"] = get_permalink( $item->post_id );
+			$result_mayor[] = $result;
+        }
+	}
+	
+	if(!empty($result_mayor[0])){
+		return json_encode($result_mayor);	
+	}
+
+    
+}
